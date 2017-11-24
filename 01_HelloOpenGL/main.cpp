@@ -1,3 +1,6 @@
+/***
+ * 可以把OpenGL看成一个大型的状态机。
+ */
 #include <iostream>
 // 静态链接GLEW 不需要把lib放到exe目录下了
 #define GLEW_STATIC
@@ -6,8 +9,18 @@
 #include <GLFW/glfw3.h>
 using namespace std;
 
-int main() {
+/***
+ * 按键事件回调函数
+ *  回调函数需要使用 glfwSet...Callback(window, callback) 函数注册 注意：要在游戏循环前注册
+ * @param window 响应事件的窗口
+ * @param key 被按下的键
+ * @param scanCode 暂时未知
+ * @param action 动作(按下、释放..)
+ * @param mode 是否有Ctrl等控制键
+ */
+void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
 
+int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -39,10 +52,27 @@ int main() {
     // 渲染窗口 前两个参数是左上角位置
     glViewport(0, 0, width, height);
 
+    glfwSetKeyCallback(window, key_callback);
+    // 游戏循环
     while(!glfwWindowShouldClose(window))
     {
         // 检查是否触发了事件
         glfwPollEvents();
+        // 渲染指令
+        /***
+         * 把渲染(Rendering)操作放在游戏循环中
+         */
+        // 指定清空颜色后填充的颜色 RGBA
+        // 状态设置函数
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        /***
+         * 清空指定标识的缓冲
+         *  GL_COLOR_BUFFER_BIT
+         *  GL_DEPTH_BUFFER_BIT
+         *  GL_STENCIL_BUFFER_BIT
+         */
+        // 状态应用函数
+        glClear(GL_COLOR_BUFFER_BIT);
         // 交换颜色缓冲
         /***
          * 双缓冲(Double Buffer)
@@ -55,7 +85,16 @@ int main() {
          */
         glfwSwapBuffers(window);
     }
+
     // 释放资源
     glfwTerminate();
     return 0;
+}
+
+void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode) {
+    // 按下ESC键时响应
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        // 设置关闭窗口属性为true
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
 }
