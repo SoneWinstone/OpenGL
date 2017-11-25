@@ -1,16 +1,10 @@
-/***
- * OpenGL中，任何事物都在3D空间命中。由3D坐标转为2D坐标的处理过程是由图形渲染管线(Graphics Pipeline，通常叫管线)管理的。
- * 图形渲染管线可以划分为几个固定的阶段，每个阶段会把前一个阶段的输出作为输入，这些阶段很容易并行执行。GPU成千上万的小处理核心可以为每个阶段运行各自的小程序(着色器 Shader)
- * 顶点着色器(Vertex Shader) -> 图元装配(Shape Assembly) -> 几何着色器(Geometry Shader) -> 光栅化(Rasterization) -> 片段着色器(Fragment Shader) -> 测试与混合(Tests and Blending)
- * 在现代OpenGL中，必须定义至少一个顶点着色器和一个片段着色器(GPU中没有默认的顶点/片段着色器)
- */
 #include <iostream>
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 using namespace std;
 
-int main() {
+int temp() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -99,7 +93,6 @@ int main() {
     const GLchar* fragmentShaderSource = R"(
     #version 330 core
     out vec4 color;
-
     void main() {
         color = vec4(1.0f, 0.5f, 0.2f, 1.0f);
     }
@@ -190,11 +183,6 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-        // render
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // Draw triangle
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);

@@ -3,7 +3,7 @@ project(02_HelloTriangle)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp temp.cpp)
 add_executable(02_HelloTriangle ${SOURCE_FILES})
 
 include_directories(F:/OpenGL/include)
