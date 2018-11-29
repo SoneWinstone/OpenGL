@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 using namespace std;
 
-int temp() {
+int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

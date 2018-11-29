@@ -5,8 +5,7 @@
  * 在现代OpenGL中，必须定义至少一个顶点着色器和一个片段着色器(GPU中没有默认的顶点/片段着色器)
  */
 #include <iostream>
-#define GLEW_STATIC
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 using namespace std;
 
@@ -26,10 +25,9 @@ int main() {
     }
     glfwMakeContextCurrent(window);
 
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
-    {
-        std::cout << "Failed to initialize GLEW" << std::endl;
+    // 初始化GLAD GLAD用来管理OpenGL的函数指针 调用OpenGL函数前需要先初始化GLAD
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        cout << "初始化 GLAD 失败" << endl;
         return -1;
     }
 
