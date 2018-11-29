@@ -1,4 +1,5 @@
-#include <glad/glad.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <iostream>
@@ -15,11 +16,8 @@ int main() {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "03_着色器", nullptr, nullptr);
     glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        cout << "initialize GLAD failure" << endl;
-        return -1;
-    }
+    glewExperimental = GL_TRUE;
+    glewInit();
 
     GLfloat vertices[] = {
             // 位置              // 颜色
