@@ -3,15 +3,21 @@ project(02_HelloTriangle)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(PLATFORM Linux)
+if (WIN32)
+    message("Platform: Windows")
+    set(PLATFORM Windows)
+#ELSEIF (APPLE)
+#ELSEIF (UNIX)
+ELSE(WIN32)
+    message("Platform: Linux")
+    set(PLATFORM Linux)
+endif (WIN32)
 
 if (${PLATFORM} STREQUAL "Linux")
     # Linux
-    message("Platform: Linux")
     set(SOURCE_FILES main.cpp linux/glad.c #[[glew.cpp]])
 else(${PLATFORM} STREQUAL "Linux")
     # Windows
-    message("Platform: Windows")
     set(SOURCE_FILES main.cpp win/glad.c #[[glew.cpp]])
 endif (${PLATFORM} STREQUAL "Linux")
 
