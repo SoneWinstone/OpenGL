@@ -13,7 +13,7 @@
 //#include <SOIL/SOIL.h>
 #include "shader.h"
 using namespace std;
-const string imgFolder = R"(C:\Users\jianw\Pictures\OpenGL\)";
+const string imgFolder = R"(C:\Users\SmartCloud\Pictures\OpenGL\)";
 const int WIDTH = 800, HEIGHT = 600;
 
 // 按键处理函数(非回调版)
@@ -29,16 +29,14 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 //    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "04_纹理", nullptr, nullptr);
-    if (window == nullptr)
-    {
+    if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);
     // 初始化GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -87,6 +85,8 @@ int main() {
 
     GLuint texture[2];
     glGenTextures(2, texture);
+
+    // 设置第一个纹理
     glBindTexture(GL_TEXTURE_2D, texture[0]);
     // 对当前绑定的纹理对象设置环绕、过滤方式
     /***
@@ -116,7 +116,7 @@ int main() {
      *  GL_NEAREST_MIPMAP_LINEAR	在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样
      *  GL_LINEAR_MIPMAP_LINEAR	    在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样
      *
-     * 注意：不能对放大使用多级渐远纹理过滤选项，不然会报错GL_INVALID_ENUM
+     * 注意：不能对放大使用多级渐远纹理过滤选项(就算能设置也没效果)，不然会报错GL_INVALID_ENUM
      */
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -126,7 +126,9 @@ int main() {
     // 使用stb_image.h 加载图像
     int width, height, nChannels;
     unsigned char* image = stbi_load((imgFolder + "container.jpg").c_str(), &width, &height, &nChannels, 0);
-    /***
+    /**
+     * glTexImage2D 纹理载入纹理图片
+     *
      * param1：纹理目标 与当前绑定的纹理保持一致
      * param2：多级渐远纹理级别
      * param3：希望存储的格式
@@ -143,9 +145,10 @@ int main() {
         cout << "Failed to load texture!" << endl;
     }
     // 释放SOIL的资源
-//    SOIL_free_image_data(image);
+    // SOIL_free_image_data(image);
     stbi_image_free(image);
 
+    // 设置第二个纹理
     glBindTexture(GL_TEXTURE_2D, texture[1]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
