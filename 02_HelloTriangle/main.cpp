@@ -208,7 +208,7 @@ int main() {
      *  param5：Step 步长 两个顶点相差的字节大小
      *  param6：表示位置数据在缓冲中起始位置的偏移量
      */
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*) nullptr);
     // 启用VAO中对应的顶点属性数组,默认是关闭的 param:顶点属性位置(location)
     glEnableVertexAttribArray(0);
 //    glDisableVertexAttribArray(0);
@@ -227,7 +227,7 @@ int main() {
     glBindVertexArray(VAO_RECT);
     glBindBuffer(GL_ARRAY_BUFFER, VAO_RECT);
     glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *) nullptr);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 //----------------------------------------------------------------------------------------------------------------------
