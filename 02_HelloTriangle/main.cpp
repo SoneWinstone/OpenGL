@@ -295,7 +295,8 @@ int main() {
          */
         glBindVertexArray(VAO_RECT);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_INT, (GLvoid *)0);
+        glDrawElements(GL_TRIANGLE_FAN, 6, GL_UNSIGNED_INT, (GLvoid *) nullptr);
+//        glDrawElements(GL_TRIANGLE_FAN, 3, GL_UNSIGNED_INT, (GLvoid *) (3 * sizeof(GLfloat)));
         // 解绑VA0
         glBindVertexArray(0);
 

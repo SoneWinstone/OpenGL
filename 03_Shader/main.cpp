@@ -3,7 +3,9 @@
 #include <cmath>
 #include <iostream>
 #include "shader.h"
+
 using namespace std;
+
 const int WIDTH = 800, HEIGHT = 600;
 void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
 
@@ -20,6 +22,13 @@ int main() {
         cout << "initialize GLAD failure" << endl;
         return -1;
     }
+
+    /**
+     * 查询当前硬件可声明的着色器顶点属性上限 一般都是16个包含4个分量的顶点属性
+     */
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
     GLfloat vertices[] = {
             // 位置              // 颜色
