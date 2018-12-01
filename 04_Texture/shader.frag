@@ -3,7 +3,8 @@ in vec4 myColor;
 in vec2 TexCoord;
 
 out vec4 color;
-// GLSL有一个供纹理对象使用的内建数据类型，叫做采样器(Sampler)，它以纹理类型作为后缀，比如sampler1D、sampler3D
+// 片段着色器应该能访问纹理对象 通过采样器可以把纹理对象传给片段着色器
+// GLSL有一个供纹理对象使用的内建数据类型，叫做采样器(Sampler)，它以纹理类型作为后缀，比如sampler1D、sampler2D、sampler3D
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 

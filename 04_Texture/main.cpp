@@ -3,6 +3,8 @@
  * 做完这些后，尝试回答下面的问题：为什么在三角形的左下角是黑的?
  * 回答：左下角的坐标 <= 0.0F 转换成颜色值为0.0F 所以是黑色
  */
+// 定义了 STB_IMAGE_IMPLEMENTATION, stb_image.h 就相当于一个.c
+// SOIL库是在stb_image1.16的基础上扩展了对DDS和TGA格式的支持
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include <glad/glad.h>
@@ -12,11 +14,17 @@
 #include <iostream>
 //#include <SOIL/SOIL.h>
 #include "shader.h"
+
 using namespace std;
+
+#if defined(__liunx__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+const string imgFolder = R"(/home/winstone/Pictures/OpenGL/)";
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(WIN64) || defined(__WIN64__) || defined(_WIN64)
 const string imgFolder = R"(C:\Users\SmartCloud\Pictures\OpenGL\)";
+#endif
 const int WIDTH = 800, HEIGHT = 600;
 
-// 按键处理函数(非回调版)
+// 按键处理函数(非回调版) 这个相比回调版的会有问题 按键一次可能会多次调用函数(因为CPU处理速度很快，按键一次的时间游戏循环会执行很多次)
 void processInput(GLFWwindow *window);
 // 窗口大小改变的回调函数
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
@@ -45,7 +53,7 @@ int main() {
     glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
 //    glfwSetKeyCallback(window, key_callback);
 
-    Shader shader = Shader("../vertex.shader", "../fragment.shader");
+    Shader shader = Shader("../shader.vert", "../shader.frag");
 
     GLfloat vertices[] = {
             // 位置              // 颜色                    // 纹理坐标
@@ -121,10 +129,10 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // 加载并生成纹理
-    // 使用SOIL加载图像
-//    unsigned char* image = SOIL_load_image((imgFolder + "wall.jpg").c_str(), &width, &height, 0/*通道数*/, SOIL_LOAD_RGB);
-    // 使用stb_image.h 加载图像
     int width, height, nChannels;
+    // 使用SOIL加载图像
+    // unsigned char* image = SOIL_load_image((imgFolder + "wall.jpg").c_str(), &width, &height, &nChannels/*通道数*/, SOIL_LOAD_RGB);
+    // 使用stb_image.h 加载图像
     unsigned char* image = stbi_load((imgFolder + "container.jpg").c_str(), &width, &height, &nChannels, 0);
     /**
      * glTexImage2D 纹理载入纹理图片
@@ -162,14 +170,14 @@ int main() {
     stbi_set_flip_vertically_on_load(true);
     image = stbi_load((imgFolder + "awesomeface.png").c_str(), &width, &height, &nChannels, 0);
     // 注意这里的第七个参数是 GL_RGBA！ GL_RGBA！ GL_RGBA！
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(image);
     // glBindTexture(GL_TEXTURE_2D, 0);
 
     // 要在设置uniform 之前激活shader！！！
     shader.use();
-    // 设置采样器属于哪个纹理单元(纹理的位置)
+    // 设置采样器属于哪个纹理单元(纹理的位置 0-15)，这样就可以使用多个采样器了
     glUniform1i(glGetUniformLocation(shader.program, "texture1"), 0);
 //    glUniform1i(glGetUniformLocation(shader.program, "texture2"), 1);
     shader.setInt("texture2", 1);
@@ -181,13 +189,13 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // 默认GL_TEXTURE0 总是激活的
-        glActiveTexture(GL_TEXTURE0);
+        // glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture[0]);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture[1]);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
