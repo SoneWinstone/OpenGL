@@ -19,6 +19,7 @@ public:
     void setBool(const std::string &name, bool value) const;
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float value) const;
+    GLint  getLocation(const std::string &name) const;
     void use();
 };
 
@@ -106,6 +107,10 @@ void Shader::setInt(const std::string &name, int value) const {
 
 void Shader::setFloat(const std::string &name, float value) const {
     glUniform1f(glGetUniformLocation(this->program, name.c_str()), value);
+}
+
+GLint Shader::getLocation(const std::string &name) const {
+    return glGetUniformLocation(this->program, name.c_str());
 }
 
 #endif //INC_03_SHADER_SHADER_H

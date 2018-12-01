@@ -11,10 +11,12 @@
  *     0,  0,  0, 1 ]
  *
  * 矩阵组合：
- *  矩阵变换的顺序跟编程的顺序是相反的，最先定义的最后起作用
+ *  矩阵变换的顺序跟编程的顺序是相反的，最先定义的最后起作用，所以矩阵应该从后往前读
+ *  先缩放、在旋转、最后位移
+ *  乘法顺序 [位移矩阵]·[旋转矩阵]·[缩放矩阵]
  *
  * GLM：
- *  专门为OpenGL量身定做的数学库。只要一个头文件就可以使用
+ *  专门为OpenGL量身定做的数学库
  */
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -26,8 +28,14 @@
 #include <string>
 #include <iostream>
 #include "shader.h"
+
 using namespace std;
-const static string imgFolder = R"(C:\Users\jianw\Pictures\OpenGL\)";
+
+#if defined(__liunx__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+const string imgFolder = R"(/home/winstone/Pictures/OpenGL/)";
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(WIN64) || defined(__WIN64__) || defined(_WIN64)
+const string imgFolder = R"(C:\Users\SmartCloud\Pictures\OpenGL\)";
+#endif
 const static int WIDTH = 800, HEIGHT = 600;
 static float fMixVal = 0.2f;
 
@@ -38,10 +46,10 @@ void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main() {
     /**
-     * 把一个向量(1,0,0)位移(1,0,0)个单位
+     * 把一个向量(1,0,0)位移(1,1,0)个单位
      */
     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    // 注意这里要初始化！！！为单位矩阵 不然结果是未定义的
+    // 注意这里要初始化为单位矩阵！！！ 不然结果是未定义的
     glm::mat4 tran(1.0);
     // translate：位移函数
     tran = glm::translate(tran, glm::vec3(1.0f, 1.0f, 0.0f));
@@ -69,23 +77,21 @@ int main() {
     glViewport(0, 0, WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
 
-    Shader shader = Shader("../vertex.shader", "../fragment.shader");
+    Shader shader = Shader("../shader.vert", "../shader.frag");
 
     GLfloat vertices[] = {
             // 位置              // 颜色                    // 纹理坐标
             -.5f, -.5f, .0f,    1.0f, 1.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-            .5f, -.5f, .0f,    0.0f, 1.0f, 1.0f, 1.0f,   1.0f, 0.0f,
+             .5f, -.5f, .0f,    0.0f, 1.0f, 1.0f, 1.0f,   1.0f, 0.0f,
             -.5f,  .5f, .0f,    1.0f, 0.0f, 1.0f, 1.0f,   0.0f, 1.0f,
-            .5f,  .5f, .0f,    1.0f, 1.0f, 0.0f, 1.0f,   1.0f, 1.0f
+             .5f,  .5f, .0f,    1.0f, 1.0f, 0.0f, 1.0f,   1.0f, 1.0f
     };
     GLuint indexes[] = {
             0, 1, 2,
             1, 2, 3
     };
 
-    GLuint VBO;
-    GLuint VAO;
-    GLuint EBO;
+    GLuint VBO, VAO, EBO;
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     glGenVertexArrays(1, &VAO);
@@ -95,7 +101,7 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexes), indexes, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid *) nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), nullptr);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 9 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
@@ -139,13 +145,20 @@ int main() {
 
     shader.use();
     glUniform1i(glGetUniformLocation(shader.program, "texture1"), 0);
+//    glUniform1i(shader.getLocation("texture1"), 0);
     shader.setInt("texture2", 1);
     shader.setFloat("fMix", fMixVal);
 
     glm::mat4 trans(1.0);
-    /***
-     * glm::radians：转成弧度制
-     * glm::vec3(.0f, .0f, 1.0f)：x:0 y:0 z:1 -> 沿Z轴旋转
+    /**
+     * glm::rotate 对矩阵做旋转操作
+     *
+     * param1: 被变换的矩阵
+     * param2: 旋转的弧度
+     * param3: 旋转的方向
+     *
+     * glm::radians: 转成弧度制
+     * glm::vec3(.0f, .0f, 1.0f) x:0 y:0 z:1 -> 沿Z轴旋转
      */
     int location = glGetUniformLocation(shader.program, "transform");
 //    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(.0f, .0f, 1.0f));
@@ -157,10 +170,18 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::mat4 trans(1.0); // 每次重新定义
+        trans = glm::mat4(1.0); // 每次重新定义
         // 实际顺序是先旋转后位移
         trans = glm::translate(trans, glm::vec3(.5f, -.5f, 0.0f));
         trans = glm::rotate(trans, static_cast<float>(glfwGetTime()), glm::vec3(.0f, 0.0f, 1.0f));
+        /**
+         * glUniformMatrix4fv 把矩阵数据发给着色器
+         *
+         * param1: uniform location
+         * param2: 发送的矩阵数量
+         * param3: 是否需要对矩阵进行置换(交换矩阵的行和列) OpenGL和GLM的矩阵布局都是列布局，不需要置换
+         * param4: 矩阵数据，需要通过glm::value_ptr()函数转换
+         */
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(trans));
 
         // 默认GL_TEXTURE0 总是激活的 可以不写

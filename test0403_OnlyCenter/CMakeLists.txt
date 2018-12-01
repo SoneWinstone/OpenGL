@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(04_Texture)
+project(test0403_OnlyCenter)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -11,19 +11,19 @@ else(WIN32)
     set(SOURCE_FILES main.cpp linux/glad.c)
 endif (WIN32)
 
-add_executable(04_Texture ${SOURCE_FILES})
+add_executable(test0403_OnlyCenter ${SOURCE_FILES})
 
 if (UNIX)
     # Linux
     include_directories("/usr/local/include")
     set(OpenGL_LIBS "/usr/local/lib/libglfw.so.3")
 
-    target_link_libraries(04_Texture ${OpenGL_LIBS} -ldl -lglfw -lGL)
+    target_link_libraries(test0403_OnlyCenter ${OpenGL_LIBS} -ldl -lglfw -lGL)
 else(UNIX)
     # Windows
     include_directories("D:/OpenGL/include")
     set(OpenGL_LIBS
             "D:/OpenGL/lib/libglfw3.a"
             )
-    target_link_libraries(04_Texture ${OpenGL_LIBS} -lopengl32)
+    target_link_libraries(test0403_OnlyCenter ${OpenGL_LIBS} -lopengl32)
 endif (UNIX)

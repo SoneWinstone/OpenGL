@@ -9,7 +9,11 @@
 #include <iostream>
 #include "shader.h"
 using namespace std;
-const static string imgFolder = R"(C:\Users\jianw\Pictures\OpenGL\)";
+#if defined(__liunx__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+const static string imgFolder = R"(/home/winstone/Pictures/OpenGL/)";
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(WIN64) || defined(__WIN64__) || defined(_WIN64)
+const string imgFolder = R"(C:\Users\SmartCloud\Pictures\OpenGL\)";
+#endif
 const static int WIDTH = 800, HEIGHT = 600;
 static float fMixVal = 0.2f;
 
@@ -17,6 +21,7 @@ static float fMixVal = 0.2f;
 void processInput(GLFWwindow *window);
 // 窗口大小改变的回调函数
 void frame_buffer_size_callback(GLFWwindow* window, int width, int height);
+void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode);
 
 int main() {
     glfwInit();
@@ -39,6 +44,7 @@ int main() {
 
     glViewport(0, 0, WIDTH, HEIGHT);
     glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     Shader shader = Shader("../vertex.shader", "../fragment.shader");
 
@@ -116,7 +122,7 @@ int main() {
     shader.setFloat("fMix", fMixVal);
 
     while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+//        processInput(window);
         shader.setFloat("fMix", fMixVal);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -157,5 +163,22 @@ void processInput(GLFWwindow *window) {
         fMixVal -= 0.1f;
         if (fMixVal < 0.0f)
             fMixVal = 0.0f;
+    }
+    cout << fMixVal << endl;
+}
+
+void key_callback(GLFWwindow* window, int key, int scanCode, int action, int mode) {
+    if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action) {
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    } else if (GLFW_KEY_UP == key && GLFW_PRESS == action) {
+        fMixVal += 0.1f;
+        if (fMixVal > 1.0f)
+            fMixVal = 1.0f;
+        cout << fMixVal << endl;
+    } else if (GLFW_KEY_DOWN == key && GLFW_PRESS == action) {
+        fMixVal -= 0.1f;
+        if (fMixVal < 0.0f)
+            fMixVal = 0.0f;
+        cout << fMixVal << endl;
     }
 }

@@ -9,8 +9,14 @@
 #include <string>
 #include <iostream>
 #include "shader.h"
+
 using namespace std;
-const string imgFolder = R"(C:\Users\jianw\Pictures\OpenGL\)";
+
+#if defined(__liunx__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+const string imgFolder = R"(/home/winstone/Pictures/OpenGL/)";
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(WIN64) || defined(__WIN64__) || defined(_WIN64)
+const string imgFolder = R"(C:\Users\SmartCloud\Pictures\OpenGL\)";
+#endif
 const int WIDTH = 800, HEIGHT = 600;
 
 // 按键处理函数(非回调版)
@@ -127,7 +133,7 @@ int main() {
         glBindTexture(GL_TEXTURE_2D, texture[1]);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
