@@ -12,7 +12,11 @@
 #include <iostream>
 #include "shader.h"
 using namespace std;
-const static string imgFolder = R"(C:\Users\jianw\Pictures\OpenGL\)";
+#if defined(__liunx__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
+const string imgFolder = R"(/home/winstone/Pictures/OpenGL/)";
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(WIN64) || defined(__WIN64__) || defined(_WIN64)
+const string imgFolder = R"(C:\Users\SmartCloud\Pictures\OpenGL\)";
+#endif
 const static int WIDTH = 800, HEIGHT = 600;
 static float fMixVal = 0.2f;
 
@@ -25,8 +29,8 @@ float lastFrame = 0.0f; // 上一帧的时间
 
 // 设置一个变量判断鼠标是不是第一次进入窗口 如果是第一次进入窗口 就把lastPosX/Y的值更新为鼠标位置 不然场景会有跳动
 bool bFirstIn = true;
-float lastPosX = 400;
-float lastPoxY = 300;
+double lastPosX = 400;
+double lastPoxY = 300;
 
 float pitch; // 俯仰角
 float yaw = -90.0f; // 偏航角
@@ -70,20 +74,20 @@ int main() {
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
 
-    Shader shader = Shader("../vertex.shader", "../fragment.shader");
+    Shader shader = Shader("../shader.vert", "../shader.frag");
 
     float vertices[] = {
             -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
             -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
             -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
             -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
@@ -94,31 +98,29 @@ int main() {
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
             -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
             -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
             -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
             -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
             -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
             -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
             -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    GLuint VBO;
-    GLuint VAO;
-    GLuint EBO;
+    GLuint VBO, VAO, EBO;
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
 
@@ -191,7 +193,7 @@ int main() {
     };
 
     while (!glfwWindowShouldClose(window)) {
-        float currentFrame = glfwGetTime();
+        auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
