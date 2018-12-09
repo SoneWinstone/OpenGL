@@ -116,8 +116,8 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
-    Shader shader("../vertex.shader", "../fragment.shader");
-    Shader lightShader("../vertex.shader", "../lightFragment.shader");
+    Shader shader("../shader.vert", "../shader.frag");
+    Shader lightShader("../shader.vert", "../lightShader.frag");
     shader.use();
     shader.setVec3("lightPos", lightPos);
 
